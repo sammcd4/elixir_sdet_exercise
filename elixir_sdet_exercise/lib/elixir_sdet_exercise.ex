@@ -38,7 +38,7 @@ defmodule FacebookHelper do
         choose_radio and elem(v, 0)=="radio" ->
           select_radio_button(elem(v, 1))
         true ->
-          IO.puts "No match"
+          "Skipping radio button"
       end
     end
   end

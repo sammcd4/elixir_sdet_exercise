@@ -5,7 +5,11 @@ defmodule ElixirSdetExerciseTest do
   import FacebookHelper
 
   # Start hound session and destroy when tests are run
-  hound_session()
+  hound_session(driver: %{chromeOptions: %{"args" => [
+    "--user-agent=#{Hound.Browser.user_agent(:chrome)}",
+    "--headless",
+    "--disable-gpu"
+  ]}})
 
   ## Verification methods
   ##---------------------------------------------------
@@ -102,6 +106,12 @@ defmodule ElixirSdetExerciseTest do
 
     assert_radio_error(:gender)
     assert_login_page()
+  end
+
+  @tag unit: true
+  @tag invalid: true
+  test "invalid email" do
+    negtest_type_invalid_field(:email)
   end
 
   @tag unit: true
