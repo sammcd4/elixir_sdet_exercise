@@ -8,6 +8,7 @@ defmodule ElixirSdetExerciseTest do
   hound_session()
 
   ## Verification methods
+  ##---------------------------------------------------
   def assert_login_page do
     assert page_title()=="Facebook - Log In or Sign Up"
   end
@@ -18,6 +19,10 @@ defmodule ElixirSdetExerciseTest do
 
   def assert_select_error(my_field) do
     assert fb_select_has_error(my_field)
+  end
+
+  def assert_radio_error(my_field) do
+    assert fb_radio_has_error(my_field)
   end
 
   def negtest_missing_field(my_field) do
@@ -58,7 +63,10 @@ defmodule ElixirSdetExerciseTest do
     assert_select_error(drop_down)
     assert_login_page()
   end
+  ##---------------------------------------------------
 
+  ## Tests
+  ##---------------------------------------------------
   @tag single_missing: false
   test "submit blank fields" do
     launch_facebook()
@@ -84,6 +92,16 @@ defmodule ElixirSdetExerciseTest do
   @tag single_missing: true
   test "missing password" do
     negtest_missing_field(:password)
+  end
+
+  @tag single_missing: true
+  test "missing gender" do
+    launch_facebook()
+    register_valid_user(false)
+    fb_submit_form()
+
+    assert_radio_error(:gender)
+    assert_login_page()
   end
 
   @tag unit: true
@@ -121,4 +139,5 @@ defmodule ElixirSdetExerciseTest do
   test "invalid birthday year" do
     negtest_select_invalid_drop_down(:year)
   end
+  ##---------------------------------------------------
 end

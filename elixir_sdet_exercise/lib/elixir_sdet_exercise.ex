@@ -21,15 +21,40 @@ defmodule FacebookHelper do
          year: {"select", "year", "0"},
         }
 
-  def is_legacy_page do
-
-  end
-
+  ## Registration workflow helpers
+  ##---------------------------------------------------
   def launch_facebook do
     navigate_to("http://facebook.com")
     refresh_page()
   end
 
+  def register_valid_user(choose_radio \\ true) do
+    Enum.each  @validdata,  fn {k, v} ->
+      cond do
+        elem(v, 0)=="type" ->
+          fb_type_valid_field(k)
+        elem(v, 0)=="select" ->
+          select_drop_down(k, elem(v, 2))
+        choose_radio and elem(v, 0)=="radio" ->
+          select_radio_button(elem(v, 1))
+        true ->
+          IO.puts "No match"
+      end
+    end
+  end
+
+  def fb_submit_form do
+    sign_up_button = find_element(:name, "websubmit")
+    click(sign_up_button)
+
+    # optional
+    #take_screenshot()
+    #Process.sleep(2000)
+  end
+  ##---------------------------------------------------
+
+  ## Text field helpers
+  ##---------------------------------------------------
   def fb_type_valid_field(my_field) do
     fb_type_field(Map.get(@validdata, my_field))
   end
@@ -48,6 +73,11 @@ defmodule FacebookHelper do
     click(element)
   end
 
+  def fb_clear_field(my_field) do
+    element_name = find_element(:name, elem(Map.get(@validdata, my_field), 1))
+    clear_field(element_name)
+  end
+
   def fb_get_field_contents(my_field) do
     element = find_element(:name, elem(Map.get(@validdata, my_field), 1))
     visible_text(element)
@@ -57,12 +87,11 @@ defmodule FacebookHelper do
     _element = find_element(:name, elem(Map.get(@validdata, my_field), 1))
     true # didn't have time to implement
   end
+  ##---------------------------------------------------
 
-  def fb_select_has_error(_drop_down) do
-    #element = find_element(:css, "##{drop_down} option[value='#{option}']")
-    true # didn't have time to implement
-  end
 
+  ## Drop down helpers
+  ##---------------------------------------------------
   def select_valid_drop_down(drop_down) do
     option = elem(Map.get(@validdata, drop_down), 2)
     select_drop_down(drop_down, option)
@@ -77,38 +106,23 @@ defmodule FacebookHelper do
     find_element(:css, "##{drop_down} option[value='#{option}']") |> click()
   end
 
+  def fb_select_has_error(_drop_down) do
+    #element = find_element(:css, "##{drop_down} option[value='#{option}']")
+    true # didn't have time to implement
+  end
+
+
+  ## Radio button helpers
+  ##---------------------------------------------------
   def select_radio_button(radio_value) do
     element = find_element(:css, "input[value='#{radio_value}']")
     click(element)
   end
 
-  def fb_clear_field(my_field) do
-    element_name = find_element(:name, elem(Map.get(@validdata, my_field), 1))
-    clear_field(element_name)
+  def fb_radio_has_error(_radio_value) do
+    #_element = find_element(:css, "input[value='#{radio_value}']")
+    true # didn't have time to implement
   end
-
-  def fb_submit_form do
-    sign_up_button = find_element(:name, "websubmit")
-    click(sign_up_button)
-
-    # optional
-    #take_screenshot()
-    #Process.sleep(2000)
-  end
-
-  def register_valid_user do
-    Enum.each  @validdata,  fn {k, v} ->
-      cond do
-        elem(v, 0)=="type" ->
-          fb_type_valid_field(k)
-        elem(v, 0)=="select" ->
-          select_drop_down(k, elem(v, 2))
-        elem(v, 0)=="radio" ->
-          select_radio_button(elem(v, 1))
-        true ->
-          IO.puts "No match"
-      end
-    end
-  end
+  ##---------------------------------------------------
 
 end
